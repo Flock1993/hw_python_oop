@@ -1,3 +1,6 @@
+from typing import List
+
+
 class InfoMessage:
     """Информационное сообщение о тренировке."""
 
@@ -49,7 +52,7 @@ class Training:
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        pass
+        raise NotImplementedError
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
@@ -70,10 +73,9 @@ class Running(Training):
         # * время_тренировки_в_минутах
         coeff_calorie_1: int = 18
         coeff_calorie_2: int = 20
-        result = ((coeff_calorie_1 * self.get_mean_speed()
-                  - coeff_calorie_2) * self.weight / self.M_IN_KM
-                  * self.duration * self.MIN_IN_H)
-        return result
+        return ((coeff_calorie_1 * self.get_mean_speed()
+                - coeff_calorie_2) * self.weight / self.M_IN_KM
+                * self.duration * self.MIN_IN_H)
 
 
 class SportsWalking(Training):
@@ -91,14 +93,14 @@ class SportsWalking(Training):
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
         # формула расчета
-        # (0.035 * вес + (средняя_скорость**2 // рост) * 0.029 * вес)
+        # (0.035 * вес + (средняя_скорость ** 2 // рост) * 0.029 * вес)
         #  * время_тренировки_в_минутах
-        coeff_calorie_3 = 0.035
-        coeff_calorie_4 = 0.029
+        coeff_calorie_1: float = 0.035
+        coeff_calorie_2: float = 0.029
         return (
-            coeff_calorie_3 * self.weight
+            coeff_calorie_1 * self.weight
             + (self.get_mean_speed() ** 2 // self.height)
-            * coeff_calorie_4 * self.weight) * (self.duration * self.MIN_IN_H)
+            * coeff_calorie_2 * self.weight) * (self.duration * self.MIN_IN_H)
 
 
 class Swimming(Training):
@@ -128,19 +130,20 @@ class Swimming(Training):
         """Получить количество затраченных калорий."""
         # формула расчета
         # (средняя_скорость + 1.1) * 2 * вес
-        coeff_calorie_5 = 1.1
-        return (self.get_mean_speed() + coeff_calorie_5) * 2 * self.weight
+        coeff_calorie_1: float = 1.1
+        coeff_calorie_2: float = 2
+        return ((self.get_mean_speed() + coeff_calorie_1) * coeff_calorie_2
+                * self.weight)
 
 
-def read_package(workout_type: str, data: list) -> Training:
+def read_package(workout_type: str, data: List[float]) -> Training:
     """Прочитать данные полученные от датчиков."""
     train_dict = {'SWM': Swimming,
                   'RUN': Running,
                   'WLK': SportsWalking}
     if workout_type not in train_dict:
-        return f'Запрашиваемого типа тренировки {workout_type} не существует.'
-    else:
-        return train_dict[workout_type](*data)
+        raise ValueError('Запрашиваемого типа тренировки не существует.')
+    return train_dict[workout_type](*data)
 
 
 def main(training: Training) -> None:
