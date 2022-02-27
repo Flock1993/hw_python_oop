@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict, Type
 
 
 class InfoMessage:
@@ -138,11 +138,12 @@ class Swimming(Training):
 
 def read_package(workout_type: str, data: List[float]) -> Training:
     """Прочитать данные полученные от датчиков."""
-    train_dict = {'SWM': Swimming,
-                  'RUN': Running,
-                  'WLK': SportsWalking}
+    train_dict: Dict[str, Type[Training]] = {'SWM': Swimming,
+                                             'RUN': Running,
+                                             'WLK': SportsWalking}
     if workout_type not in train_dict:
-        raise ValueError('Запрашиваемого типа тренировки не существует.')
+        raise ValueError(f'Запрашиваемого типа тренировки {workout_type}'
+                         f'не существует.')
     return train_dict[workout_type](*data)
 
 
